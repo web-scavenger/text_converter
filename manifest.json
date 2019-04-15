@@ -1,13 +1,13 @@
 {
     "manifest_version": 2,
  
-    "name": "UZ booking",
-    "description": "This extension for UZ Gov",
+    "name": "Text converter",
+    "description": "This extension to convert cirilic to latin",
     "version": "1.0",
     
     "browser_action": {
         "default_icon": "favi.ico",
-        "default_title":  "UZ Extension",
+        "default_title":  "Text converter",
         "default_popup": "popup.html"
     },
 

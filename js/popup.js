@@ -4,7 +4,8 @@
 window.onload = () => {
     const rusTextArea = document.getElementById('rusLetterArea')
     const engTextArea = document.getElementById('engLetterArea')
-
+    let activeArea = null;
+    
     const getConvertedLetter = (letters, flag) => {
         return new Promise(res => {
             const convertedLet = lettersValues.find(element => element[flag] === letters)
@@ -61,39 +62,73 @@ window.onload = () => {
             engToRus();
         }
     }
-    
-    const enterEventHandler = () =>{
-        document.addEventListener("keydown", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                // Do more work
-                engToRus()
+
+    const addRusCopyHandler = () => {
+        rusTextArea.onclick = function () {
+            document.execCommand("copy");
+        }
+
+        rusTextArea.addEventListener("copy", function (event) {
+            event.preventDefault();
+            if (event.clipboardData) {
+                event.clipboardData.setData("text/plain", rusTextArea.value);
             }
         });
     }
 
-    const addRusCopyHandler = () =>{
-        rusTextArea.onclick = function() {
+    const addEngCopyHandler = () => {
+        engTextArea.onclick = function () {
             document.execCommand("copy");
-          }
-          
-          rusTextArea.addEventListener("copy", function(event) {
+        }
+
+        engTextArea.addEventListener("copy", function (event) {
             event.preventDefault();
             if (event.clipboardData) {
-              event.clipboardData.setData("text/plain", rusTextArea.value);
+                event.clipboardData.setData("text/plain", rusTextArea.value);
             }
-          });
+        });
     }
-    const addHandlers = () => {
+
+    const enterEventListner = (event) =>{
+        if (event.key === "Enter") {
+            event.preventDefault();
+            switch (activeArea) {
+                case 'engLetterArea':
+                    engToRus()
+                    addRusCopyHandler()
+                    break;
+                case 'rusLetterArea':
+                    rusToEng();
+                    addEngCopyHandler();
+                    break;
+            }
+        }
+    }
+
+    const textAreaClickHandler = () => {
+        const textareas = document.querySelectorAll('textarea');
+        for (textarea of textareas) {
+            textarea.onclick = (elem) => enterEventHandler(elem)
+        }
+    }
+
+    const enterEventHandler = (elem) => {
+        activeArea = elem.target.name;
+
+        document.removeEventListener("keydown", enterEventListner);
+        document.addEventListener("keydown", enterEventListner);
+    }
+
+    const clickBtnHandler = () => {
         const btns = document.querySelectorAll('.convertsBtn');
         for (btn of btns) {
             btn.onclick = (elem) => convert(elem)
         }
     }
+
     const init = () => {
-        addHandlers()
-        addRusCopyHandler()
-        enterEventHandler()
+        clickBtnHandler()
+        textAreaClickHandler();
     }
 
     init();
